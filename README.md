@@ -77,12 +77,27 @@ Look for 🎙️ in your menubar:
 
 ## macOS Permissions
 
-On first run, macOS will ask for:
-1. **Microphone** — to record audio
-2. **Accessibility** — for keyboard listener and auto-paste (Cmd+V)
-3. **Input Monitoring** — for global hotkey capture
+On first run, macOS will ask for three permissions. **All three are required** for Voice Dictate to work:
 
-Grant all three in **System Settings → Privacy & Security**.
+1. **Microphone** — to record audio
+2. **Accessibility** — to simulate Cmd+V paste into the active app
+3. **Input Monitoring** — to capture the global hotkey
+
+### ⚠️ Important: Add the correct Python binary
+
+macOS permissions are tied to the **specific Python binary**, not the script. If you're using a venv, you must add the **real** Python executable (not the symlink).
+
+Find it with:
+```bash
+readlink -f .venv/bin/python
+# Example output: /opt/homebrew/bin/python3.12
+```
+
+Then in **System Settings → Privacy & Security**:
+1. Go to **Accessibility** → click **+** → press **Cmd+Shift+G** → paste the path above → Add
+2. Go to **Input Monitoring** → same steps
+3. Make sure both toggles are ✅ **ON**
+4. **Restart** Voice Dictate after granting permissions
 
 ## Performance
 
@@ -122,7 +137,13 @@ TRANSCRIBE_PROMPT = "Transcribe this as a coding instruction. Preserve all techn
 ## Troubleshooting
 
 ### "This process is not trusted"
-Grant **Accessibility** + **Input Monitoring** permissions in System Settings → Privacy & Security.
+The Python binary needs **Accessibility** and **Input Monitoring** permissions. See the [permissions section](#️-important-add-the-correct-python-binary) above. You must add the **real binary** (use `readlink -f .venv/bin/python`), not the symlink.
+
+### Text goes to clipboard but doesn't paste
+Same issue — Accessibility permission is missing or granted to the wrong binary. Check `stderr` output for `"This process is not trusted"`:
+```bash
+cat /tmp/voicecode.err
+```
 
 ### Model not loading
 Ensure you have ~6 GB free RAM and ~5.5 GB free disk space.
