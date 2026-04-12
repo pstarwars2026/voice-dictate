@@ -136,12 +136,12 @@ Voice Dictate uses a PID lock — only one instance runs at a time. If it crashe
 rm -f /tmp/voice_dictate.pid
 ```
 
-## Built With
+## Acknowledgments
 
-- [Gemma 4 E4B](https://ai.google.dev/gemma) — Google's multimodal AI model with native audio understanding
-- [MLX](https://github.com/ml-explore/mlx) — Apple's machine learning framework for Apple Silicon
-- [mlx-vlm](https://github.com/Blaizzy/mlx-vlm) — Vision/Language/Audio model inference on MLX
-- [rumps](https://github.com/jaredks/rumps) — Ridiculously Uncomplicated macOS Python Statusbar apps
+- [Gemma 4](https://ai.google.dev/gemma) by Google — subject to [Gemma Terms of Use](https://ai.google.dev/gemma/terms)
+- [MLX](https://github.com/ml-explore/mlx) by Apple
+- [mlx-vlm](https://github.com/Blaizzy/mlx-vlm) by Prince Canuma
+- [rumps](https://github.com/jaredks/rumps) by Jared Suttles
 
 ## License
 
