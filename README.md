@@ -75,6 +75,20 @@ Look for 🎙️ in your menubar:
 - **⚡** = Processing
 - Click → **Test Record (5s)** for quick test without hotkey
 
+## Companion Project: Voice Dictate Doctor
+
+Voice Dictate includes a lightweight diagnostics tool for setup and issue triage:
+
+```bash
+python tools/voice_dictate_doctor.py
+python tools/voice_dictate_doctor.py --json
+```
+
+The doctor checks macOS, Apple Silicon, Python, installed dependencies, audio input,
+clipboard helpers, model cache space, and the exact Python binary that needs
+Accessibility and Input Monitoring permissions. It does not load the model or send
+audio anywhere.
+
 ## macOS Permissions
 
 On first run, macOS will ask for three permissions. **All three are required** for Voice Dictate to work:
@@ -135,6 +149,16 @@ TRANSCRIBE_PROMPT = "Transcribe this as a coding instruction. Preserve all techn
 ```
 
 ## Troubleshooting
+
+### Run the doctor first
+```bash
+python tools/voice_dictate_doctor.py
+```
+
+If you open an issue, include:
+```bash
+python tools/voice_dictate_doctor.py --json
+```
 
 ### "This process is not trusted"
 The Python binary needs **Accessibility** and **Input Monitoring** permissions. See the [permissions section](#️-important-add-the-correct-python-binary) above. You must add the **real binary** (use `readlink -f .venv/bin/python`), not the symlink.

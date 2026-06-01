@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a setup, dictation, permission, or paste issue
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe what you expected and what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor output
+      description: Run `python tools/voice_dictate_doctor.py --json` and paste the output.
+      render: json
+    validations:
+      required: true
+
+  - type: input
+    id: mac
+    attributes:
+      label: Mac model and chip
+      placeholder: "MacBook Pro, M3 Pro"
+    validations:
+      required: true
+
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "15.5"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: permissions
+    attributes:
+      label: Permissions granted to the exact Python binary
+      options:
+        - label: Microphone
+        - label: Accessibility
+        - label: Input Monitoring
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste terminal output or `/tmp/voicecode.err` if available.
+      render: shell
