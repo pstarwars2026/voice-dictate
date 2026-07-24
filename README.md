@@ -4,8 +4,6 @@
 
 A private alternative to [Superwhisper](https://superwhisper.com) ($8/mo) and [Wispr Flow](https://wisprflow.com) ($15/mo) that runs 100% locally on your Mac.
 
-https://github.com/user-attachments/assets/placeholder-demo.mp4
-
 ## Features
 
 - 🎙️ **Hold-to-record** — Hold Right ⌘, speak, release. Text pastes instantly.
