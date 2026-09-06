@@ -1,12 +1,15 @@
 #!/bin/bash
 set -e
 
+DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$DIR"
+
 echo "🎙️  Voice Dictate — Setup"
 echo "========================="
 echo ""
 
 # Check Apple Silicon
-if [[ $(uname -m) != "arm64" ]]; then
+if [[ $(uname -s) != "Darwin" || $(uname -m) != "arm64" ]]; then
     echo "❌ Voice Dictate requires Apple Silicon (M1/M2/M3/M4)."
     exit 1
 fi
@@ -18,6 +21,7 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else "Python 3.10 or newer is required")'
 echo "✅ Python $PYTHON_VERSION detected"
 
 # Create venv
