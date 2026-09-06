@@ -13,7 +13,7 @@ import wave
 from dataclasses import replace
 
 from dictation_core import (
-    ClipboardDelivery, DictationController, HOTKEYS, MODES, SAMPLE_RATE,
+    ClipboardDelivery, DictationController, HOTKEYS, MODES, SAMPLE_RATE, VERSION,
     load_settings, save_settings, settings_path,
 )
 
@@ -32,6 +32,9 @@ class MLXBackend:
         from mlx_vlm.prompt_utils import apply_chat_template
 
         audio = np.concatenate(blocks)
+        # Reject absent signals before a generative model can invent a transcript.
+        if not audio.size or float(np.max(np.abs(audio))) <= 1e-5:
+            return ""
         pcm = (np.clip(audio, -1, 1) * 32767).astype(np.int16)
         fd, path = tempfile.mkstemp(prefix="voice-dictate-", suffix=".wav")
         os.close(fd)
@@ -67,6 +70,7 @@ def ensure_single_instance():
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--version", action="version", version=f"Voice Dictate {VERSION}")
     parser.add_argument("--hotkey", choices=HOTKEYS)
     parser.add_argument("--model")
     parser.add_argument("--mode", choices=MODES)
@@ -173,6 +177,7 @@ def main():
             self.held = set()
             self.active_key = None
             self.suppress_until = 0
+            self.quitting = False
             self.clipboard = ClipboardDelivery(Clipboard(), frontmost, paste)
             self.controller = DictationController(
                 MLXBackend(settings.model), recorder_factory, self.deliver, settings,
@@ -265,6 +270,14 @@ def main():
             return self.clipboard.deliver(text, target, session_settings)
 
         def tick(self, _):
+            if self.quitting:
+                if self.controller.future is not None and not self.controller.future.done():
+                    self.status_item.title = "Quitting; waiting for model cleanup..."
+                    return
+                self.timer.stop()
+                self.clipboard.tick(force=True)
+                rumps.quit_application()
+                return
             while not self.events.empty():
                 event, key = self.events.get()
                 if event == "release":
@@ -295,11 +308,12 @@ def main():
                 self.status_item.title = "Hotkey listener stopped; check Input Monitoring and restart"
 
         def quit(self, _):
-            self.timer.stop()
+            if self.quitting:
+                return
+            self.quitting = True
             self.listener.stop()
             self.controller.close()
-            self.clipboard.tick(force=True)
-            rumps.quit_application()
+            self.tick(None)
 
     app = VoiceDictateApp()
     try:

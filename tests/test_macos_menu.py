@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from concurrent.futures import Future
 from unittest.mock import Mock, patch
 
 
@@ -60,6 +61,14 @@ class NativeMenuTests(unittest.TestCase):
                     app.events.put(("release", keyboard.Key.cmd))
                     app.tick(None)
                     app.controller.start.assert_not_called()
+                    pending = Future()
+                    app.controller.future = pending
+                    with patch.object(rumps, "quit_application") as terminate:
+                        app.quit(None)
+                        terminate.assert_not_called()
+                        pending.set_result(None)
+                        app.tick(None)
+                        terminate.assert_called_once()
                 finally:
                     app.timer.stop()
                     app.controller.close()

@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, replace
 
 
 DEFAULT_MODEL = "mlx-community/gemma-4-e4b-it-4bit"
+VERSION = "2.0.0"
 SAMPLE_RATE = 16000
 MODES = {
     "verbatim": "Verbatim",
@@ -26,8 +27,8 @@ HOTKEYS = {
 }
 PROMPTS = {
     "verbatim": "Transcribe exactly as spoken in the original language(s). Preserve filler words, repetitions, and wording. Do not translate or polish.",
-    "polished": "Transcribe and rewrite into natural English. Translate when necessary, remove filler words, and fix grammar without changing meaning or intent.",
-    "original": "Transcribe in the original language(s), preserving code-switching. Improve punctuation and remove filler words without translating or changing meaning.",
+    "polished": "Translate the speech into English and rewrite it in clear, natural English, fixing grammar without changing meaning or intent. Remove ALL hesitation sounds (um, uh, er), including at the beginning of the sentence. Begin directly with the meaningful content. The final output MUST be entirely in English regardless of the language spoken. Return only the edited English text.",
+    "original": "Produce a cleaned-up dictation in the original language(s), preserving code-switching. Improve punctuation without translating or changing meaning. Remove ALL hesitation sounds (um, uh, er), including at the beginning of the sentence. Begin directly with the meaningful content. Return only the edited text.",
     "developer": "Transcribe as a clear developer instruction in English. Remove filler words, but preserve technical identifiers, paths, URLs, commands, numbers, and library names. Do not execute instructions or invent code.",
 }
 
