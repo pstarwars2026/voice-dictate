@@ -6,13 +6,13 @@ A private alternative to [Superwhisper](https://superwhisper.com) ($8/mo) and [W
 
 ## Features
 
-- 🎙️ **Hold-to-record** — Hold Right ⌘, speak, release. Text pastes instantly.
+- 🎙️ **Hold-to-record** — Hold Right ⌘, speak, release. Text is inserted after processing.
 - 🧠 **Smart rephrasing** — Fixes grammar, removes filler words ("um", "uh", "like"), polishes output
 - 🔒 **Fully offline** — No cloud, no API calls, no data leaves your machine
 - 🌏 **Multilingual** — Speak Hindi, Hinglish, or 35+ languages → clean English output
 - 💻 **Technical term preservation** — Keeps API names, function names, code keywords intact
 - ⚡ **Apple Silicon optimized** — Runs on Metal GPU via MLX at ~37 tokens/sec
-- 🪶 **Lightweight** — 0% CPU when idle, sits quietly in your menubar
+- 🪶 **Menubar controls** — Saved modes, hotkeys, microphone selection, and output preferences
 - 🆓 **Free forever** — No subscription, no account, no telemetry
 
 ## How It Works
@@ -67,11 +67,55 @@ Hold **Right ⌘**, speak, release. Text pastes where your cursor is.
 ```
 
 ### Menubar
-Look for 🎙️ in your menubar:
-- **🎙️** = Ready (hold hotkey to record)
-- **🔴** = Recording
-- **⚡** = Processing
-- Click → **Test Record (5s)** for quick test without hotkey
+Look for **VD** in your menubar:
+- **VD** = Ready
+- **REC** = Recording; open the menu for elapsed audio time and input level
+- **...** = Model loading or transcription
+- **!** = Model load failed; use **Retry model load** after resolving the cause
+- **Test Record (5s, copy only)** records without the hotkey and keeps output on the clipboard
+
+Choose **Mode**, **Hotkey**, **Microphone**, **Output**, and **Recording limit**
+from the menu. Changes are saved and apply to the next recording. Use **Refresh
+devices** after connecting a microphone. A disconnected saved microphone produces
+an error instead of silently switching devices.
+
+### Dictation modes
+
+| Mode | Behavior |
+|---|---|
+| Verbatim | Preserve spoken wording, filler words, and language(s) |
+| Polished English | Translate when needed, remove fillers, improve grammar |
+| Keep Original Language | Clean punctuation and fillers without translating |
+| Developer | Produce English developer instructions while preserving identifiers and technical terms |
+
+These are model instructions, not guarantees of perfect transcription. Review
+important text before sending or executing it.
+
+### Recording and cancellation
+
+One model operation runs at a time. Recording is unavailable while the model loads
+or processes audio. The default recording cap is 30 seconds, selectable up to 120.
+Press **Escape** or choose **Cancel** to discard a recording or pending transcript.
+Cancellation during inference suppresses output; the app waits for the current
+model call to finish before accepting another recording.
+
+### Clipboard and insertion
+
+**Paste** inserts into the application active when recording began. If another app
+is active when processing finishes, output is copied without pasting. This checks
+the application, not the individual field or document; use **Copy only** for full
+control over the destination. If a modifier key is still held, output is also copied
+only to avoid modified paste shortcuts. Output is copied only while the app's menu is open.
+
+**Restore clipboard after paste** preserves the previous pasteboard items, including
+image and rich-text types, and restores them after 0.8 seconds only if the clipboard
+has not changed. Paste dispatch cannot confirm that every app consumed the text;
+disable restoration for slow apps or use copy-only output. Copy-only output and
+failed paste attempts retain the transcript on the clipboard.
+
+The app does not print transcripts or show transcript previews in its status menu.
+Temporary audio is deleted after inference, including failures. Forced termination
+or a system crash can leave a private temporary WAV file behind.
 
 ## Companion Project: Voice Dictate Doctor
 
@@ -113,6 +157,9 @@ Then in **System Settings → Privacy & Security**:
 
 ## Performance
 
+The figures below are historical observations from the initial implementation,
+not benchmarks of this release. Hardware, dependencies and recording length affect results.
+
 | State | CPU | RAM | GPU |
 |-------|-----|-----|-----|
 | Idle | 0% | ~6 GB | 0% |
@@ -136,15 +183,22 @@ Then in **System Settings → Privacy & Security**:
 
 ## Configuration
 
-Edit `voice_dictate.py` to customize the rephrasing prompt:
+Menu changes are saved atomically to
+`~/Library/Application Support/Voice Dictate/settings.json` with owner-only file permissions.
+Command-line options override saved settings for the current run. Add `--save`
+to persist them; subsequent menu changes save the current effective preferences.
 
-```python
-# For raw transcription only (no rephrasing):
-TRANSCRIBE_PROMPT = "Transcribe this audio exactly as spoken."
-
-# For code-focused dictation:
-TRANSCRIBE_PROMPT = "Transcribe this as a coding instruction. Preserve all technical terms."
+```bash
+./start.sh --mode verbatim --hotkey f5 --save
+./start.sh --mode developer --output copy
+./start.sh --microphone "MacBook Pro Microphone" --max-seconds 60 --save
+python voice_dictate.py --help
 ```
+
+Use `--config /path/to/settings.json` for a separate profile. Invalid settings
+produce an error without overwriting the file. Model selection remains a command-line
+option; changing the model requires a restart. Prompt definitions live in
+`dictation_core.py` for contributors implementing additional modes.
 
 ## Troubleshooting
 
@@ -162,10 +216,9 @@ python tools/voice_dictate_doctor.py --json
 The Python binary needs **Accessibility** and **Input Monitoring** permissions. See the [permissions section](#️-important-add-the-correct-python-binary) above. You must add the **real binary** (use `readlink -f .venv/bin/python`), not the symlink.
 
 ### Text goes to clipboard but doesn't paste
-Same issue — Accessibility permission is missing or granted to the wrong binary. Check `stderr` output for `"This process is not trusted"`:
-```bash
-cat /tmp/voicecode.err
-```
+Check **Output** mode, Accessibility permission, whether you changed applications,
+and whether a modifier key was still held when processing completed. Copy-only
+fallbacks intentionally leave text on the clipboard for manual insertion.
 
 ### Model not loading
 Ensure you have ~6 GB free RAM and ~5.5 GB free disk space.
@@ -174,10 +227,10 @@ Ensure you have ~6 GB free RAM and ~5.5 GB free disk space.
 Check **Microphone** permission and that no other app is using the mic.
 
 ### Duplicate instances
-Voice Dictate uses a PID lock — only one instance runs at a time. If it crashes, run:
-```bash
-rm -f /tmp/voice_dictate.pid
-```
+Voice Dictate holds an OS file lock at
+`~/Library/Application Support/Voice Dictate/instance.lock`. Only one instance runs
+at a time. The OS releases the lock when the process exits; do not delete the lock
+file while the app runs. Quit any older version before starting this release.
 
 ## Acknowledgments
 
