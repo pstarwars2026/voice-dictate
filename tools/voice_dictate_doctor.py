@@ -24,11 +24,13 @@ from typing import Iterable
 
 REQUIRED_MODULES = (
     "mlx_vlm",
+    "jinja2",
     "rumps",
     "pynput",
     "sounddevice",
     "pyperclip",
     "numpy",
+    "ApplicationServices",
 )
 
 
