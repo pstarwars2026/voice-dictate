@@ -6,16 +6,40 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.10", "3.13"]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python }}
+
+      - name: Install audio test dependency
+        run: python -m pip install numpy
+
+      - name: Install native UI dependencies
+        if: runner.os == 'macOS'
+        run: python -m pip install rumps==0.4.0 pynput sounddevice numpy pyobjc-framework-ApplicationServices
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py"
 
       - name: Check doctor JSON output
-        run: python tools/voice_dictate_doctor.py --json || true
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          import sys
+          result = subprocess.run([sys.executable, "tools/voice_dictate_doctor.py", "--json"], capture_output=True, text=True)
+          assert result.returncode in (0, 1), result.stderr
+          checks = json.loads(result.stdout)
+          assert isinstance(checks, list) and checks
+          assert all(c["status"] in ("ok", "info", "warn", "fail") for c in checks)
+          PY
+
+      - name: CLI smoke check without model dependencies
+        run: python voice_dictate.py --help

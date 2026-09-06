@@ -29,6 +29,7 @@ REQUIRED_MODULES = (
     "sounddevice",
     "pyperclip",
     "numpy",
+    "ApplicationServices",
 )
 
 

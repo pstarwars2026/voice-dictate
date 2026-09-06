@@ -1,6 +1,7 @@
 mlx-vlm>=0.1.0
-rumps>=0.4.0
+rumps==0.4.0
 pynput>=1.7.0
 sounddevice>=0.4.0
 pyperclip>=1.8.0
+pyobjc-framework-ApplicationServices>=10.0
 numpy>=1.24.0
