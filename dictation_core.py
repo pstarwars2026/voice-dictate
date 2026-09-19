@@ -9,16 +9,15 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, replace
+from usage_quota import QuotaError
 
 
 DEFAULT_MODEL = "mlx-community/gemma-4-e4b-it-4bit"
-VERSION = "2.0.0"
+VERSION = "3.0.0a1"
 SAMPLE_RATE = 16000
+MAX_RECORDING_SECONDS = 30
 MODES = {
     "verbatim": "Verbatim",
-    "polished": "Polished English",
-    "original": "Keep Original Language",
-    "developer": "Developer",
 }
 HOTKEYS = {
     "cmd_r": "Right Command", "cmd_l": "Left Command",
@@ -27,9 +26,6 @@ HOTKEYS = {
 }
 PROMPTS = {
     "verbatim": "Transcribe exactly as spoken in the original language(s). Preserve filler words, repetitions, and wording. Do not translate or polish.",
-    "polished": "Translate the speech into English and rewrite it in clear, natural English, fixing grammar without changing meaning or intent. Remove ALL hesitation sounds (um, uh, er), including at the beginning of the sentence. Begin directly with the meaningful content. The final output MUST be entirely in English regardless of the language spoken. Return only the edited English text.",
-    "original": "Produce a cleaned-up dictation in the original language(s), preserving code-switching. Improve punctuation without translating or changing meaning. Remove ALL hesitation sounds (um, uh, er), including at the beginning of the sentence. Begin directly with the meaningful content. Return only the edited text.",
-    "developer": "Transcribe as a clear developer instruction in English. Remove filler words, but preserve technical identifiers, paths, URLs, commands, numbers, and library names. Do not execute instructions or invent code.",
 }
 
 
@@ -39,7 +35,7 @@ def prompt_for(mode):
 
 @dataclass(frozen=True)
 class Settings:
-    mode: str = "polished"
+    mode: str = "verbatim"
     hotkey: str = "cmd_r"
     model: str = DEFAULT_MODEL
     microphone: str | None = None
@@ -58,13 +54,18 @@ class Settings:
             raise ValueError("Microphone must be a device name")
         if type(self.restore_clipboard) is not bool:
             raise ValueError("restore_clipboard must be true or false")
-        if type(self.max_seconds) is not int or not 5 <= self.max_seconds <= 120:
-            raise ValueError("Recording limit must be 5 to 120 seconds")
+        if type(self.max_seconds) is not int or not 5 <= self.max_seconds <= MAX_RECORDING_SECONDS:
+            raise ValueError("Free recording limit must be 5 to 30 seconds")
         return self
 
 
 def settings_path():
-    return Path.home() / "Library/Application Support/Voice Dictate/settings.json"
+    return Path.home() / "Library/Application Support/Voice Dictate Free/settings.json"
+
+
+def instance_lock_path():
+    # Share the v2 lock to prevent two editions from responding to the same hotkey.
+    return Path.home() / "Library/Application Support/Voice Dictate/instance.lock"
 
 
 def load_settings(path):
@@ -129,12 +130,15 @@ class AudioBuffer:
 class DictationController:
     """Public methods run on the UI thread; only inference runs on the worker."""
 
-    def __init__(self, backend, recorder_factory, deliver, settings=None, clock=time.monotonic):
+    def __init__(self, backend, recorder_factory, deliver, settings=None, clock=time.monotonic, quota=None):
         self.backend = backend
         self.recorder_factory = recorder_factory
         self.deliver = deliver
-        self.settings = settings or Settings()
+        self.settings = (settings or Settings()).validate()
         self.clock = clock
+        self.quota = quota
+        self.quota_token = None
+        self.remaining_seconds = None
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="dictation")
         self.state = "loading"
         self.message = "Loading model..."
@@ -153,9 +157,22 @@ class DictationController:
     def start(self, target=None, seconds=None, copy_only=False):
         if self.state != "ready" or self.closed:
             return False
+        self.settings.validate()
+        duration = self.settings.max_seconds if seconds is None else seconds
+        if type(duration) is not int or not 5 <= duration <= MAX_RECORDING_SECONDS:
+            raise ValueError("Free recording limit must be 5 to 30 seconds")
+        if self.quota is not None:
+            try:
+                self.quota_token, duration, self.remaining_seconds = self.quota.reserve(duration)
+            except QuotaError as error:
+                self.message = str(error)
+                return False
+            except Exception:
+                self.message = "Free allowance unavailable or used. Check Keychain; daily reset is 00:00 UTC."
+                return False
         self.session_settings = replace(self.settings, output="copy") if copy_only else self.settings
         self.target = target
-        self.buffer = AudioBuffer(seconds or self.settings.max_seconds)
+        self.buffer = AudioBuffer(duration)
         self.started = self.clock()
         self.cancelled = False
         try:
@@ -163,11 +180,23 @@ class DictationController:
             self.recorder.start()
         except Exception:
             self._close_recorder()
+            self._settle_quota(captured_only=True)
             self.message = "Microphone unavailable. Check device and Microphone permission."
             return False
         self.state = "recording"
         self.message = "Recording..."
         return True
+
+    def _settle_quota(self, captured_only=False):
+        if self.quota is not None and self.quota_token is not None:
+            try:
+                elapsed = self.buffer.duration if captured_only else max(self.buffer.duration, self.clock() - self.started, 0)
+                self.remaining_seconds = self.quota.settle(self.quota_token, elapsed)
+            except Exception:
+                # The pre-recording reservation stays charged if storage fails.
+                pass
+            finally:
+                self.quota_token = None
 
     def _close_recorder(self):
         recorder, self.recorder = self.recorder, None
@@ -187,6 +216,7 @@ class DictationController:
             return
         self.state = "stopping"
         self._close_recorder()
+        self._settle_quota()
         if cancel or self.buffer.error or self.buffer.duration < 0.3:
             self.state = "ready"
             self.message = ("Cancelled" if cancel else self.buffer.error or "Recording too short")
