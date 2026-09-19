@@ -8,7 +8,7 @@ from unittest.mock import Mock
 
 from dictation_core import (
     AudioBuffer, ClipboardDelivery, DictationController, Settings,
-    load_settings, prompt_for, save_settings,
+    MODES, instance_lock_path, load_settings, prompt_for, save_settings, settings_path,
 )
 
 
@@ -16,7 +16,7 @@ class SettingsTests(unittest.TestCase):
     def test_roundtrip_and_private_file(self):
         with tempfile.TemporaryDirectory() as root:
             path = Path(root) / "nested/settings.json"
-            settings = Settings(mode="original", hotkey="f5", output="copy")
+            settings = Settings(mode="verbatim", hotkey="f5", output="copy")
             save_settings(settings, path)
             self.assertEqual(load_settings(path), settings)
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
@@ -30,9 +30,34 @@ class SettingsTests(unittest.TestCase):
             self.assertEqual(json.loads(path.read_text()), {"mode": "unknown"})
 
     def test_invalid_limits_and_types(self):
-        for value in (0, 121, True, "30"):
+        for value in (0, 4, 31, 60, 120, 121, True, "30"):
             with self.assertRaises(ValueError):
                 Settings(max_seconds=value).validate()
+
+    def test_only_verbatim_is_available_in_free(self):
+        self.assertEqual(set(MODES), {"verbatim"})
+        for mode in ("polished", "original", "developer"):
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                Settings(mode=mode).validate()
+            with self.assertRaises(KeyError):
+                prompt_for(mode)
+
+    def test_legacy_config_is_not_silently_downgraded(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "settings.json"
+            original = '{"mode": "polished", "max_seconds": 120}'
+            path.write_text(original)
+            with self.assertRaises(ValueError):
+                load_settings(path)
+            self.assertEqual(path.read_text(), original)
+
+    def test_free_settings_are_separate_but_instance_lock_is_shared(self):
+        self.assertEqual(settings_path().parent.name, "Voice Dictate Free")
+        self.assertEqual(instance_lock_path().parent.name, "Voice Dictate")
+
+    def test_supported_recording_boundaries(self):
+        for seconds in (5, 15, 30):
+            self.assertEqual(Settings(max_seconds=seconds).validate().max_seconds, seconds)
 
     def test_missing_settings_use_defaults(self):
         with tempfile.TemporaryDirectory() as root:
@@ -78,7 +103,9 @@ class ControllerTests(unittest.TestCase):
 
     def finish(self):
         try:
-            self.controller.future.result(timeout=2)
+            future = self.controller.future
+            if future is not None:
+                future.result(timeout=2)
         except RuntimeError:
             pass
         self.controller.tick()
@@ -150,13 +177,51 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(self.backend.calls, [])
         self.assertEqual(self.controller.state, "ready")
 
-    def test_session_uses_mode_at_recording_start(self):
-        self.controller.settings = Settings(mode="verbatim")
+    def test_session_uses_settings_at_recording_start(self):
+        self.controller.settings = Settings(output="copy")
         self.record()
-        self.controller.settings = Settings(mode="developer")
+        self.controller.settings = Settings(output="paste")
         self.controller.stop()
         self.finish()
         self.assertEqual(self.backend.calls[0][1], prompt_for("verbatim"))
+        self.assertEqual(self.deliver.call_args.args[2].output, "copy")
+
+    def test_recording_override_cannot_exceed_free_limit(self):
+        for seconds in (0, -1, 31, 120, True, 5.5):
+            with self.subTest(seconds=seconds), self.assertRaises(ValueError):
+                self.controller.start(seconds=seconds)
+        self.factory.assert_not_called()
+        self.assertEqual(self.controller.state, "ready")
+
+    def test_quota_failure_prevents_microphone_start(self):
+        from usage_quota import QuotaError
+        quota = Mock()
+        quota.reserve.side_effect = QuotaError("Daily allowance used")
+        self.controller.quota = quota
+        self.assertFalse(self.controller.start())
+        self.factory.assert_not_called()
+        self.assertEqual(self.controller.message, "Daily allowance used")
+
+    def test_quota_reserves_before_capture_and_charges_cancellation(self):
+        quota = Mock()
+        quota.reserve.return_value = ("token", 3, 0)
+        quota.settle.return_value = 2
+        self.controller.quota = quota
+        self.factory.side_effect = lambda *args: self.assertEqual(quota.reserve.call_count, 1) or self.recorder
+        self.record()
+        self.assertEqual(self.controller.buffer.limit, 3 * 16000)
+        self.now = 1
+        self.controller.cancel()
+        quota.settle.assert_called_once_with("token", 1)
+        self.assertEqual(self.controller.remaining_seconds, 2)
+
+    def test_quota_refunds_failed_microphone_start(self):
+        quota = Mock()
+        quota.reserve.return_value = ("token", 30, 270)
+        self.controller.quota = quota
+        self.recorder.start.side_effect = RuntimeError("microphone denied")
+        self.assertFalse(self.controller.start())
+        quota.settle.assert_called_once_with("token", 0)
 
     def test_short_recording_is_not_sent_to_model(self):
         self.controller.start()

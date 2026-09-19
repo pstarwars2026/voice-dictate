@@ -1,4 +1,10 @@
-# Voice Dictate v2
+# Voice Dictate Free
+
+**Development preview: 3.0.0a1.** This branch contains the smaller open-source
+Free edition. It is not a signed app or an App Store release.
+The [v2.0.0 release](https://github.com/pstarwars2026/voice-dictate/releases/tag/v2.0.0)
+and its four modes remain available under Apache-2.0, unchanged.
+See [Free and Pro](docs/EDITIONS.md) for the commercial app scope and current status.
 
 **Free, on-device voice dictation for Apple Silicon Macs.** Hold a key, speak,
 and release to transcribe into your active application or copy to the clipboard.
@@ -8,9 +14,10 @@ through [MLX-VLM](https://github.com/Blaizzy/mlx-vlm). Model files download on f
 use; transcription runs locally. There is no account requirement, paid API,
 telemetry, or app-managed transcript history.
 
-## What's new in v2
+## Free edition
 
-- Four selectable dictation modes, including original-language output.
+- Verbatim dictation in the original language(s), up to 30 seconds per recording
+  and 5 minutes per UTC day, tracked locally in Keychain.
 - Saved hotkey, microphone, output, clipboard, and recording-limit preferences.
 - Serialized model loading/transcription and bounded recordings.
 - Cancellation while recording or processing; cancelled output is never delivered.
@@ -30,7 +37,8 @@ telemetry, or app-managed transcript history.
   can run without internet access.
 
 This is a Python menubar app. A signed standalone `.app` installer is not included
-in v2.
+in this source edition. Automatic model-version updates are not implemented yet;
+first-use download and cached offline inference are available today.
 
 ## Install
 
@@ -77,14 +85,11 @@ Wait for **VD** in the menubar, hold **Right Command**, speak, and release.
 The app shows **REC** while recording and **...** while loading or transcribing.
 Open the menu for the recording timer and input-level meter.
 
-Choose a mode from **Mode**:
+Free provides one mode:
 
 | Mode | Intended output |
 |---|---|
 | Verbatim | Spoken wording, filler words, and original language(s) |
-| Polished English | Natural English with fillers removed and grammar improved |
-| Keep Original Language | Cleaner punctuation and fewer fillers without translating |
-| Developer | English developer instructions preserving identifiers, paths, and technical terms |
 
 These are instructions to the model, not guarantees of exact recognition. Review
 important text before sending it or executing dictated commands.
@@ -99,9 +104,32 @@ on the clipboard for inspection.
 
 ### Recording and cancellation
 
-The default recording limit is 30 seconds; menu choices range from 15 to 120 seconds.
+The default recording limit is 30 seconds; menu choices are 15 and 30 seconds.
+The command line accepts 5 to 30 seconds. Longer recordings are not offered in
+either new edition until segmentation is implemented and tested.
 The cap applies to actual captured samples and elapsed time. Recording is unavailable
 while the model is loading or processing another recording.
+
+### Daily allowance
+
+Free provides 5 minutes per UTC day, resetting at 00:00 UTC. The counter lives in
+macOS Keychain, separately from preferences; restarting or deleting the settings
+file does not refill it. Time is reserved before the microphone starts and unused
+time is returned on a normal stop. Used time is rounded up to whole seconds.
+Cancellation and failed transcription still count captured recording time.
+A microphone that fails before capturing audio does not consume time.
+
+Force-quitting or a crash can consume the full reserved clip (at most 30 seconds).
+This conservative behavior prevents repeatedly quitting to erase usage. If fewer
+than 30 seconds remain, the last recording is shortened to the available time.
+Test Record uses the same allowance. Keychain errors stop new recordings rather
+than silently granting more time; unlock Keychain and retry.
+
+The counter contains only usage totals, timestamps, and a reservation identifier,
+not audio or transcripts. It is not synchronized through iCloud by this app.
+Clock rollback and time-zone changes do not grant another allowance. Deliberate
+clock advances, removal of the Keychain item, or modified source can bypass local
+limits. This is restart-resistant accounting, not tamper-proof DRM.
 
 Press **Escape** or choose **Cancel** to discard a recording or pending transcript.
 During inference, cancellation suppresses the result but waits for the current
@@ -128,14 +156,14 @@ Copy-only output and failed paste attempts leave the transcript on the clipboard
 ## Configuration
 
 Preferences are written atomically to
-`~/Library/Application Support/Voice Dictate/settings.json`, with owner-only file
+`~/Library/Application Support/Voice Dictate Free/settings.json`, with owner-only file
 permissions. CLI flags override saved settings for the current run; add `--save`
 to persist them. A subsequent menu change saves the current effective preferences.
 
 ```bash
 ./start.sh --mode verbatim --hotkey f5 --save
-./start.sh --mode developer --output copy
-./start.sh --microphone "MacBook Pro Microphone" --max-seconds 60 --save
+./start.sh --output copy
+./start.sh --microphone "MacBook Pro Microphone" --max-seconds 30 --save
 ./start.sh --model mlx-community/gemma-4-e4b-it-8bit
 ./start.sh --help
 ```
@@ -143,6 +171,11 @@ to persist them. A subsequent menu change saves the current effective preference
 Use `--config /path/to/settings.json` for a separate profile. Invalid settings
 produce an error without overwriting the file. Changing the model requires a
 restart; alternate models must support MLX-VLM audio input.
+
+Free uses a separate settings directory and never automatically rewrites your v2
+preferences. Explicitly supplying a v2 config with a removed mode or a limit over
+30 seconds gives an error without changing the file. The instance lock is shared
+with v2 to prevent duplicate hotkey listeners across editions.
 
 ## Privacy
 
@@ -154,6 +187,9 @@ clipboard access, just like manually copied text.
 
 The first model download requires network access. To force cached operation after
 setup, launch with `HF_HUB_OFFLINE=1 ./start.sh`.
+
+Daily usage is stored locally in a Keychain item under service
+`com.pstarwars2026.voicedictate.free-usage`. There is no usage server or account.
 
 ## Troubleshooting
 
@@ -192,6 +228,11 @@ acceptance checks, and remaining limitations. See [contributing](CONTRIBUTING.md
 for issue reports and pull requests. Native UI tests require macOS and UI
 dependencies; lifecycle tests run without downloading a model.
 
+Current development-edition results are in
+[Free preview checks](docs/FREE_PREVIEW_CHECKS.md). Historical v2 results below
+must not be read as verification of a native Free/Pro product.
+
+Historical v2 verification (not certification of this development preview):
 v2 was exercised on an Apple M4 Mac with 16 GB RAM and macOS 26.6.2: all four
 modes with generated English/Hindi speech, digital silence, real Logitech BRIO
 microphone capture, Right Command activation, native text insertion, clipboard

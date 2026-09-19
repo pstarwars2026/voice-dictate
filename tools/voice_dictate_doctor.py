@@ -31,6 +31,7 @@ REQUIRED_MODULES = (
     "pyperclip",
     "numpy",
     "ApplicationServices",
+    "Security",
 )
 
 
