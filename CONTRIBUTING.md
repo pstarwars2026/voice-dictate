@@ -7,8 +7,12 @@ Thanks for helping improve private, on-device dictation for macOS.
 - Improve setup and permission diagnostics.
 - Add support notes for specific macOS versions or Apple Silicon machines.
 - Test alternate MLX speech-capable models and document tradeoffs.
-- Improve technical-term preservation prompts for developer dictation.
+- Improve verbatim recognition and technical-term preservation.
 - Add packaging improvements that keep the app offline and telemetry-free.
+
+This repository contains the Free edition. See [edition boundaries](docs/EDITIONS.md)
+before proposing commercial features. Contributions here remain Apache-2.0;
+do not submit private Pro source, purchase credentials, or signing material.
 
 ## Local checks
 

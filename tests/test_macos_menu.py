@@ -33,9 +33,16 @@ class NativeMenuTests(unittest.TestCase):
                 try:
                     app.controller.future.result(timeout=2)
                     app.tick(None)
-                    app.set_preference("mode", "original")
-                    self.assertEqual(load_settings(config).mode, "original")
-                    self.assertEqual(len(app.mode_menu), 4)
+                    app.set_preference("mode", "verbatim")
+                    self.assertEqual(load_settings(config).mode, "verbatim")
+                    self.assertEqual(len(app.mode_menu), 1)
+                    self.assertEqual(len(app.limit_menu), 2)
+                    with patch.object(rumps, "alert") as alert:
+                        app.set_preference("mode", "developer")
+                        app.set_preference("max_seconds", 60)
+                        self.assertEqual(alert.call_count, 2)
+                    self.assertEqual(load_settings(config).mode, "verbatim")
+                    self.assertEqual(load_settings(config).max_seconds, 30)
                     app.refresh_microphones(None)
                     self.assertEqual(len(app.microphone_menu), 2)
                     # Use an isolated native pasteboard; never alter the user's clipboard.

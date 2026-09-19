@@ -14,8 +14,9 @@ from dataclasses import replace
 
 from dictation_core import (
     ClipboardDelivery, DictationController, HOTKEYS, MODES, SAMPLE_RATE, VERSION,
-    load_settings, save_settings, settings_path,
+    instance_lock_path, load_settings, save_settings, settings_path,
 )
+from usage_quota import DailyQuota, KeychainStore
 
 
 class MLXBackend:
@@ -55,9 +56,9 @@ class MLXBackend:
 
 
 def ensure_single_instance():
-    directory = settings_path().parent
+    directory = instance_lock_path().parent
     directory.mkdir(parents=True, exist_ok=True)
-    handle = open(directory / "instance.lock", "a+")
+    handle = open(instance_lock_path(), "a+")
     try:
         fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
@@ -70,13 +71,13 @@ def ensure_single_instance():
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", action="version", version=f"Voice Dictate {VERSION}")
+    parser.add_argument("--version", action="version", version=f"Voice Dictate Free {VERSION}")
     parser.add_argument("--hotkey", choices=HOTKEYS)
     parser.add_argument("--model")
     parser.add_argument("--mode", choices=MODES)
     parser.add_argument("--output", choices=("paste", "copy"))
     parser.add_argument("--microphone", help="Exact input device name")
-    parser.add_argument("--max-seconds", type=int)
+    parser.add_argument("--max-seconds", type=int, help="Recording limit, 5 to 30 seconds")
     parser.add_argument("--config", type=Path, default=settings_path())
     parser.add_argument("--save", action="store_true", help="Save command-line preferences")
     return parser.parse_args()
@@ -181,15 +182,17 @@ def main():
             self.clipboard = ClipboardDelivery(Clipboard(), frontmost, paste)
             self.controller = DictationController(
                 MLXBackend(settings.model), recorder_factory, self.deliver, settings,
+                quota=DailyQuota(KeychainStore(), settings_path().parent / "usage.lock"),
             )
             self.status_item = rumps.MenuItem("Loading model...")
+            self.usage_item = rumps.MenuItem("Free: 30s per recording, 5min per day (UTC)")
             self.mode_menu = rumps.MenuItem("Mode")
             self.hotkey_menu = rumps.MenuItem("Hotkey")
             self.microphone_menu = rumps.MenuItem("Microphone")
             self.output_menu = rumps.MenuItem("Output")
             self.limit_menu = rumps.MenuItem("Recording limit")
             self.restore_item = rumps.MenuItem("Restore clipboard after paste", callback=self.toggle_restore)
-            self.menu = [self.status_item, None, self.mode_menu, self.hotkey_menu,
+            self.menu = [self.status_item, self.usage_item, None, self.mode_menu, self.hotkey_menu,
                          self.microphone_menu, self.output_menu, self.limit_menu, self.restore_item,
                          None, rumps.MenuItem("Test Record (5s, copy only)", callback=self.test_record),
                          rumps.MenuItem("Cancel", callback=lambda _: self.controller.cancel()),
@@ -199,7 +202,7 @@ def main():
             for menu, field, choices in (
                 (self.mode_menu, "mode", MODES), (self.hotkey_menu, "hotkey", HOTKEYS),
                 (self.output_menu, "output", {"paste": "Paste", "copy": "Copy only"}),
-                (self.limit_menu, "max_seconds", {15: "15 seconds", 30: "30 seconds", 60: "60 seconds", 120: "120 seconds"}),
+                (self.limit_menu, "max_seconds", {15: "15 seconds", 30: "30 seconds"}),
             ):
                 for value, label in choices.items():
                     item = rumps.MenuItem(label, callback=lambda _, f=field, v=value: self.set_preference(f, v))
@@ -296,6 +299,9 @@ def main():
                             self.active_key = key
             self.controller.tick()
             self.clipboard.tick()
+            remaining = self.controller.remaining_seconds
+            if remaining is not None:
+                self.usage_item.title = f"Free allowance: {remaining // 60}m {remaining % 60:02d}s unreserved (resets 00:00 UTC)"
             state = self.controller.state
             self.title = {"recording": "REC", "processing": "...", "loading": "...", "error": "!"}.get(state, "VD")
             if state == "recording":
