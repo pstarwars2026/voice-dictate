@@ -105,8 +105,8 @@ on the clipboard for inspection.
 ### Recording and cancellation
 
 The default recording limit is 30 seconds; menu choices are 15 and 30 seconds.
-The command line accepts 5 to 30 seconds. Longer recordings are not offered in
-either new edition until segmentation is implemented and tested.
+The command line accepts 5 to 30 seconds. Longer sessions are part of Pro
+development, not this Free edition.
 The cap applies to actual captured samples and elapsed time. Recording is unavailable
 while the model is loading or processing another recording.
 

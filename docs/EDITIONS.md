@@ -15,7 +15,7 @@ verified. It is not included in the advertised initial paid feature set.
 | Capability | Free source edition | Planned packaged Pro upgrade |
 |---|---|---|
 | Local verbatim dictation | Available | Included |
-| Recording length | 5-30 seconds | Same limit for initial release |
+| Recording length | 5-30 seconds | Longer sessions, internally chunked for the model |
 | Daily allowance | 5 minutes per UTC day, local Keychain counter | No daily allowance cap |
 | Hotkey, microphone, cancellation, clipboard safety | Available | Included |
 | First-use model download and offline inference | Available | Included |
@@ -30,7 +30,7 @@ The purchase unlocks the stated features; it does not promise all future paid
 products or features forever.
 
 Custom vocabulary, per-app profiles, history/search/export, batch transcription,
-templates, automation, and longer recordings are outside this initial scope.
+templates, and automation are outside this initial scope.
 No account, advertising, usage server, or transcript collection is planned.
 Necessary safety fixes and compatible model updates are not Pro gates.
 
