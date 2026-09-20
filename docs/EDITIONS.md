@@ -2,9 +2,10 @@
 
 ## Status
 
-The public development branch is Voice Dictate Free 3.0.0a1, a Python menubar
-app. The existing v2.0.0 release, source history, and license remain intact.
-The native commercial app is in development, not available for purchase.
+Voice Dictate is one native macOS app with Free and Pro tiers, currently in
+development and not available for purchase. This public repository contains
+the Free Python core (3.0.0a1) and the compatible model catalog. Native packaging
+and StoreKit purchase code are maintained privately.
 
 The first packaged release will prioritize the Mac App Store. Copy-only output
 is the accepted baseline in both tiers. The Python source runtime can still
@@ -19,12 +20,12 @@ verified. It is not included in the advertised initial paid feature set.
 | Daily allowance | 5 minutes per UTC day, local Keychain counter | No daily allowance cap |
 | Hotkey, microphone, cancellation, clipboard safety | Available | Included |
 | First-use model download and offline inference | Available | Included |
-| Polished English, original-language cleanup, developer modes | Not in the new Free edition | Existing v2 implementations retained privately |
-| Verified model-update catalog and rollback | Planned | Same support as Free |
+| Polished English, original-language cleanup, developer modes | Not in Free | Implemented in the native development app |
+| Verified model-update catalog and rollback | Catalog published here; manager in native app | Same support as Free |
 | Standalone installer and purchase/restore | Not shipped | In development |
 
-Target pricing is a USD $1.99 one-time non-consumable upgrade, not a
-subscription. This price has not been configured or published in App Store
+Target pricing is a USD $2.99 one-time non-consumable upgrade, aligned with Svara,
+not a subscription. This price has not been configured or published in App Store
 Connect. Storefront prices will be shown from the store, not hard-coded in UI.
 The purchase unlocks the stated features; it does not promise all future paid
 products or features forever.
@@ -56,7 +57,7 @@ prevent users from modifying Apache-licensed code.
 
 Ship the inference runtime with the app, not the multi-GB model weights. Download
 weights only after showing the size and obtaining the user's download consent.
-The future update catalog must specify an immutable model revision, checksums,
+The update catalog specifies an immutable model revision, checksums,
 runtime compatibility, audio support, and storage/memory requirements.
 
 Offer opt-in automatic updates from that tested catalog. Do not automatically
