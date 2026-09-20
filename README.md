@@ -1,8 +1,8 @@
 # Voice Dictate
 
 On-device dictation for Apple Silicon Macs, with Free and Pro in one macOS app.
-Version 3.0 (build 2) and its one-time Pro upgrade were submitted together to
-Apple on September 19, 2026. Both are **Waiting for Review**, not yet approved
+Version 3.0 (build 3) and its one-time Pro upgrade were submitted together to
+Apple on September 20, 2026. Both are **Waiting for Review**, not yet approved
 or available for purchase. This repository contains the Apache-2.0 Free source core
 and model catalog; the native commercial app is developed privately.
 
@@ -23,6 +23,10 @@ Silicon; the source runtime's compatibility depends on its installed libraries.
 The first release excludes France and is set to release automatically after approval.
 
 [Support](SUPPORT.md) | [Privacy](PRIVACY.md)
+
+Apple's real Sandbox product lookup, no-charge Pro purchase, unlock, clean
+quit/relaunch and Restore Purchases passed on September 20, 2026. This is separate
+from local StoreKit simulation and does not establish public availability.
 
 ## Free source preview
 
