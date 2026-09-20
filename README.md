@@ -20,6 +20,8 @@ from Apple; the USD price is a target, not a live App Store listing. See
 The current packaged development build requires macOS 26.2 or newer on Apple
 Silicon; the source runtime's compatibility depends on its installed libraries.
 
+[Support](SUPPORT.md) | [Privacy](PRIVACY.md)
+
 ## Free source preview
 
 **Source version: 3.0.0a1.** The instructions below run the Python menubar core,
