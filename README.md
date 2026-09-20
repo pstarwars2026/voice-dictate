@@ -1,14 +1,14 @@
 # Voice Dictate
 
 On-device dictation for Apple Silicon Macs, with Free and Pro in one macOS app.
-Version 3.0 (build 3) and its one-time Pro upgrade were submitted together to
+Version 3.0 (build 4) and its one-time Pro upgrade were submitted together to
 Apple on September 20, 2026. Both are **Waiting for Review**, not yet approved
 or available for purchase. This repository contains the Apache-2.0 Free source core
 and model catalog; the native commercial app is developed privately.
 
-Build 4 has passed the Pro icon checks and real Apple Sandbox restore/relaunch
-follow-up, and is uploaded for Apple processing. It has not yet replaced build 3
-in review. Verified Pro ownership changes the running Dock and in-app artwork;
+Build 4 passed the Pro icon checks and real Apple Sandbox restore/relaunch
+follow-up, and replaced build 3 in the joint submission at 11:31 AM Pacific.
+Verified Pro ownership changes the running Dock and in-app artwork;
 Finder and the App Store listing retain the base app icon.
 
 | Packaged app | Free | Pro |

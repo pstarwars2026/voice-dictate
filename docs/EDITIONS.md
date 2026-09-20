@@ -3,10 +3,10 @@
 ## Status
 
 Voice Dictate is one native macOS app with Free and Pro tiers. Version 3.0
-(build 3) and Voice Dictate Pro were submitted together on September 20, 2026;
+(build 4) and Voice Dictate Pro were submitted together on September 20, 2026;
 both are **Waiting for Review**, not approved or available for purchase yet.
 Build 3 adds clearer purchase/restore feedback; Pro artwork is saved with Apple.
-Build 4 is uploaded and processing before an authorized review replacement.
+Build 4 completed the authorized review replacement at 11:31 AM Pacific.
 Its Pro artwork follows verified ownership in the app and running Dock, including
 after relaunch and restore. Finder and the App Store listing retain the base icon.
 The first release excludes France and uses automatic release after approval.
