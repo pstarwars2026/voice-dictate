@@ -1,8 +1,9 @@
 # Voice Dictate
 
 On-device dictation for Apple Silicon Macs, with Free and Pro in one macOS app.
-The packaged app is in development for the Mac App Store, not yet available
-for purchase. This public repository contains the Apache-2.0 Free source core
+Version 3.0 (build 2) and its one-time Pro upgrade were submitted together to
+Apple on September 19, 2026. Both are **Waiting for Review**, not yet approved
+or available for purchase. This repository contains the Apache-2.0 Free source core
 and model catalog; the native commercial app is developed privately.
 
 | Packaged app | Free | Pro |
@@ -15,10 +16,11 @@ and model catalog; the native commercial app is developed privately.
 | On-device model download and compatible updates | Included | Included |
 
 Both tiers initially use Copy, not cross-app insertion. Storefront prices come
-from Apple; the USD price is a target, not a live App Store listing. See
+from Apple; USD $2.99 is configured for Pro, but the listing is not live yet. See
 [Free and Pro](docs/EDITIONS.md) for scope, source boundaries, and status.
-The current packaged development build requires macOS 26.2 or newer on Apple
+The submitted packaged build requires macOS 26.2 or newer on Apple
 Silicon; the source runtime's compatibility depends on its installed libraries.
+The first release excludes France and is set to release automatically after approval.
 
 [Support](SUPPORT.md) | [Privacy](PRIVACY.md)
 
