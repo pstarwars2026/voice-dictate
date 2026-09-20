@@ -6,6 +6,9 @@ Voice Dictate is one native macOS app with Free and Pro tiers. Version 3.0
 (build 3) and Voice Dictate Pro were submitted together on September 20, 2026;
 both are **Waiting for Review**, not approved or available for purchase yet.
 Build 3 adds clearer purchase/restore feedback; Pro artwork is saved with Apple.
+Build 4 is uploaded and processing before an authorized review replacement.
+Its Pro artwork follows verified ownership in the app and running Dock, including
+after relaunch and restore. Finder and the App Store listing retain the base icon.
 The first release excludes France and uses automatic release after approval.
 This public repository contains
 the Free Python core (3.0.0a1) and the compatible model catalog. Native packaging
@@ -85,6 +88,12 @@ Real Apple Sandbox product lookup at USD $2.99, no-charge purchase, Pro unlock,
 clean quit/relaunch and Restore Purchases passed September 20. Build 3 also
 passed restore after one retry from an Apple authentication-service error and
 retained Pro after a clean relaunch. These are separate from local StoreKit tests.
+
+Build 4 passed eight isolated local purchase/icon test executions, including
+refund reset. It separately loaded the existing real Apple Sandbox entitlement,
+completed explicit restore and retained Pro after clean quit/relaunch. The owner
+confirmed the running Dock shows PRO. A fresh real purchase/refund was not
+repeated on build 4; the original purchase evidence remains scoped separately.
 
 Clean-machine, minimum-supported-OS hardware, permission-denial recovery and separate offline
 native launch/inference remain acceptance gaps. App Review and actual public
