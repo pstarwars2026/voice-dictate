@@ -1,10 +1,29 @@
-# Voice Dictate Free
+# Voice Dictate
 
-**Development preview: 3.0.0a1.** This branch contains the smaller open-source
-Free edition. It is not a signed app or an App Store release.
-The [v2.0.0 release](https://github.com/pstarwars2026/voice-dictate/releases/tag/v2.0.0)
-and its four modes remain available under Apache-2.0, unchanged.
-See [Free and Pro](docs/EDITIONS.md) for the commercial app scope and current status.
+On-device dictation for Apple Silicon Macs, with Free and Pro in one macOS app.
+The packaged app is in development for the Mac App Store, not yet available
+for purchase. This public repository contains the Apache-2.0 Free source core
+and model catalog; the native commercial app is developed privately.
+
+| Packaged app | Free | Pro |
+|---|---|---|
+| Price | Free | USD $2.99 one-time, no subscription |
+| Recording duration | 30 seconds per recording | Longer recordings, 60-minute safety stop |
+| Daily allowance | 5 minutes per UTC day | No daily quota |
+| Verbatim dictation and Copy | Included | Included |
+| Polished English, Original Language, Developer | Not included | Included |
+| On-device model download and compatible updates | Included | Included |
+
+Both tiers initially use Copy, not cross-app insertion. Storefront prices come
+from Apple; the USD price is a target, not a live App Store listing. See
+[Free and Pro](docs/EDITIONS.md) for scope, source boundaries, and status.
+The current packaged development build requires macOS 26.2 or newer on Apple
+Silicon; the source runtime's compatibility depends on its installed libraries.
+
+## Free source preview
+
+**Source version: 3.0.0a1.** The instructions below run the Python menubar core,
+not the packaged app or its purchase flow.
 
 **Free, on-device voice dictation for Apple Silicon Macs.** Hold a key, speak,
 and release to transcribe into your active application or copy to the clipboard.
@@ -14,7 +33,7 @@ through [MLX-VLM](https://github.com/Blaizzy/mlx-vlm). Model files download on f
 use; transcription runs locally. There is no account requirement, paid API,
 telemetry, or app-managed transcript history.
 
-## Free edition
+## Free source features
 
 - Verbatim dictation in the original language(s), up to 30 seconds per recording
   and 5 minutes per UTC day, tracked locally in Keychain.
@@ -246,8 +265,10 @@ accuracy for all accents, languages, noisy rooms, or destination applications.
 
 ## License and acknowledgments
 
-Application code is [Apache-2.0](LICENSE). Model weights are separately governed
-by the [Gemma Terms of Use](https://ai.google.dev/gemma/terms).
+Code in this public repository is [Apache-2.0](LICENSE). Gemma 4 is separately
+provided under Google's [Apache-2.0 model license](https://ai.google.dev/gemma/apache_2).
+Earlier published source remains available under its original license in Git
+history; it is not a separate current product tier.
 
 Built with Google's Gemma, Apple's [MLX](https://github.com/ml-explore/mlx),
 [MLX-VLM](https://github.com/Blaizzy/mlx-vlm), and
