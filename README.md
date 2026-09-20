@@ -6,6 +6,11 @@ Apple on September 20, 2026. Both are **Waiting for Review**, not yet approved
 or available for purchase. This repository contains the Apache-2.0 Free source core
 and model catalog; the native commercial app is developed privately.
 
+Build 4 has passed the Pro icon checks and real Apple Sandbox restore/relaunch
+follow-up, and is uploaded for Apple processing. It has not yet replaced build 3
+in review. Verified Pro ownership changes the running Dock and in-app artwork;
+Finder and the App Store listing retain the base app icon.
+
 | Packaged app | Free | Pro |
 |---|---|---|
 | Price | Free | USD $2.99 one-time, no subscription |
