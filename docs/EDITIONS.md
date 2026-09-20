@@ -2,8 +2,11 @@
 
 ## Status
 
-Voice Dictate is one native macOS app with Free and Pro tiers, currently in
-development and not available for purchase. This public repository contains
+Voice Dictate is one native macOS app with Free and Pro tiers. Version 3.0
+(build 2) and Voice Dictate Pro were submitted together on September 19, 2026;
+both are **Waiting for Review**, not approved or available for purchase yet.
+The first release excludes France and uses automatic release after approval.
+This public repository contains
 the Free Python core (3.0.0a1) and the compatible model catalog. Native packaging
 and StoreKit purchase code are maintained privately.
 
@@ -13,20 +16,20 @@ paste using Accessibility permission; that does not establish sandbox support.
 Cross-app insertion may become Pro only after a compliant implementation is
 verified. It is not included in the advertised initial paid feature set.
 
-| Capability | Free source edition | Planned packaged Pro upgrade |
+| Capability | Free source edition | Submitted packaged Pro upgrade |
 |---|---|---|
 | Local verbatim dictation | Available | Included |
 | Recording length | 5-30 seconds | Longer sessions, internally chunked for the model |
 | Daily allowance | 5 minutes per UTC day, local Keychain counter | No daily allowance cap |
-| Hotkey, microphone, cancellation, clipboard safety | Available | Included |
+| Microphone selection, cancellation and Copy | Available | Included |
 | First-use model download and offline inference | Available | Included |
-| Polished English, original-language cleanup, developer modes | Not in Free | Implemented in the native development app |
+| Polished English, original-language cleanup, developer modes | Not in Free | Included |
 | Verified model-update catalog and rollback | Catalog published here; manager in native app | Same support as Free |
-| Standalone installer and purchase/restore | Not shipped | In development |
+| Native packaged app and purchase/restore | Not part of the source core | Submitted to Apple; not yet distributed |
 
-Target pricing is a USD $2.99 one-time non-consumable upgrade, aligned with Svara,
-not a subscription. This price has not been configured or published in App Store
-Connect. Storefront prices will be shown from the store, not hard-coded in UI.
+Pricing is a USD $2.99 one-time non-consumable upgrade, not a subscription.
+This price is configured in App Store Connect; the product is not live yet.
+Storefront prices are loaded from the store, not hard-coded in UI.
 The purchase unlocks the stated features; it does not promise all future paid
 products or features forever.
 
@@ -66,20 +69,19 @@ download before activation; keep the previous working model for rollback and
 do not replace a model during recording/inference. Cached dictation must work
 offline. New architectures can still require an app update.
 
-## Release gates
+## Verification and remaining acceptance
 
-1. Validate Gemma audio inference in the packaged runtime on Apple Silicon.
-2. Test sandboxed shortcuts and insertion before choosing App Store distribution.
-   Do not promise cross-app paste if the sandbox prevents it.
-3. Validate purchases, restore, offline ownership, pending/cancelled purchases,
-   invalid verification, and refunds. Never unlock from an editable preference.
-4. Test first download, interruption, corrupt weights, failed updates, and rollback.
-5. Test real microphone input, cancellation, permissions, and destination apps.
-6. Complete signing, privacy/model notices, packaging, and store metadata.
+The submitted build passed real packaged Gemma English/Hindi and 65-second
+fixtures in four modes, sandboxed catalog HTTPS, persistent quota, local StoreKit
+purchase/restore/refund checks, and a release signature/resource audit. A prior
+owner-approved live microphone session verified the Free 30-second stop and Copy.
+Store screenshots, privacy label, model/license notices and encryption answers
+are saved. Apple processed the build and accepted the joint review submission.
 
-Planned bundle identifier: `com.pstarwars2026.voicedictate`.
-Planned non-consumable product identifier: `com.pstarwars2026.voicedictate.pro`.
-These names follow the owner's existing app convention; no Apple registration
-or product configuration is claimed by documenting them here.
+Local StoreKit tests are not a real Apple sandbox-account purchase. Clean-machine,
+minimum-supported-OS hardware, permission-denial recovery and separate offline
+native launch/inference remain acceptance gaps. App Review and actual public
+availability are separate from these local checks.
 
-There is no new App Store submission or paid release at this stage.
+Registered bundle identifier: `com.pstarwars2026.voicedictate`.
+Configured non-consumable product identifier: `com.pstarwars2026.voicedictate.pro`.
