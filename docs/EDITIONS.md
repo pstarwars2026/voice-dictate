@@ -2,14 +2,12 @@
 
 ## Status
 
-Voice Dictate is one native macOS app with Free and Pro tiers. Version 3.0
-(build 4) and Voice Dictate Pro were submitted together on September 20, 2026;
-both are **Waiting for Review**, not approved or available for purchase yet.
-Build 3 adds clearer purchase/restore feedback; Pro artwork is saved with Apple.
-Build 4 completed the authorized review replacement at 11:31 AM Pacific.
-Its Pro artwork follows verified ownership in the app and running Dock, including
+Voice Dictate is one native macOS app with Free and Pro tiers. As last verified
+on September 20, 2026, version 3.0 and Voice Dictate Pro were **Waiting for Review**.
+That dated status is not confirmation of current App Store availability.
+Pro artwork follows verified ownership in the app and running Dock, including
 after relaunch and restore. Finder and the App Store listing retain the base icon.
-The first release excludes France and uses automatic release after approval.
+The initial planned availability excludes France.
 This public repository contains
 the Free Python core (3.0.0a1) and the compatible model catalog. Native packaging
 and StoreKit purchase code are maintained privately.
@@ -52,6 +50,9 @@ manipulation. Users can modify the open-source edition under its license.
 - This public repository remains Apache-2.0.
 - The commercial app is developed in a separate private repository. New
   proprietary code must carry a clearly scoped license.
+- Native source, purchase implementation, signing material, account details,
+  and internal commercial release evidence do not belong in this public repository,
+  its pull requests, issues, build logs, or attachments.
 - The published v2 code and modes remain usable under Apache-2.0, including
   in earlier commits and releases. They have not become secret or proprietary.
 - Distributions retain required licenses, attributions, and notices for reused
@@ -73,31 +74,10 @@ download before activation; keep the previous working model for rollback and
 do not replace a model during recording/inference. Cached dictation must work
 offline. New architectures can still require an app update.
 
-## Verification and remaining acceptance
+## Source verification
 
-The submitted build passed real packaged Gemma English/Hindi and 65-second
-fixtures in four modes, sandboxed catalog HTTPS, persistent quota, local StoreKit
-purchase/restore/refund checks, and a release signature/resource audit. A prior
-owner-approved live microphone session verified the Free 30-second stop and Copy.
-Store screenshots, privacy label, model/license notices and encryption answers
-are saved. Build 3 keeps Pro Details available after upgrading and makes restore
-results visible from Settings and the Dictation menu. The Pro price and tier
-limits are unchanged.
-
-Real Apple Sandbox product lookup at USD $2.99, no-charge purchase, Pro unlock,
-clean quit/relaunch and Restore Purchases passed September 20. Build 3 also
-passed restore after one retry from an Apple authentication-service error and
-retained Pro after a clean relaunch. These are separate from local StoreKit tests.
-
-Build 4 passed eight isolated local purchase/icon test executions, including
-refund reset. It separately loaded the existing real Apple Sandbox entitlement,
-completed explicit restore and retained Pro after clean quit/relaunch. The owner
-confirmed the running Dock shows PRO. A fresh real purchase/refund was not
-repeated on build 4; the original purchase evidence remains scoped separately.
-
-Clean-machine, minimum-supported-OS hardware, permission-denial recovery and separate offline
-native launch/inference remain acceptance gaps. App Review and actual public
-availability are separate from these local checks.
-
-Registered bundle identifier: `com.pstarwars2026.voicedictate`.
-Configured non-consumable product identifier: `com.pstarwars2026.voicedictate.pro`.
+See [Free preview checks](FREE_PREVIEW_CHECKS.md) for this repository's source
+checks and [historical v2 checks](RELEASE_CHECKS.md) for the earlier release.
+Neither certifies the native commercial app. Detailed commercial test records
+and submission operations are maintained privately. Testing alone does not
+establish App Store approval or availability.

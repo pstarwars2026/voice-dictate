@@ -6,3 +6,25 @@ __pycache__/
 *.err
 .DS_Store
 ._*
+
+# Native commercial work and local release evidence belong in the private repo.
+commercial/
+*.xcodeproj/
+*.xcworkspace/
+*.swift
+*.storekit
+*.xcarchive/
+*.app/
+*.pkg
+*.dmg
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.provisionprofile
+.env
+.env.*
+DerivedData/
+docs/assets/sandbox/
+docs/evidence/
+docs/release-state.json

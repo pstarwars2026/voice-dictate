@@ -28,6 +28,9 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py"
 
+      - name: Check public disclosure boundary
+        run: python tools/check_public_boundary.py
+
       - name: Check doctor JSON output
         run: |
           python - <<'PY'
