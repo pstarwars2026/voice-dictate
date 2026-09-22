@@ -9,5 +9,7 @@
 
 ## Privacy check
 
+- [ ] No native commercial source, private release evidence, credentials, signing files, account data, or private screenshots are included in files, this description, or comments.
+- [ ] `python tools/check_public_boundary.py`
 - [ ] This change keeps audio and transcripts on-device by default.
 - [ ] This change does not add telemetry, cloud transcription, or external API calls.
