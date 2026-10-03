@@ -1,7 +1,7 @@
 # Voice Dictate Support
 
-The native Free/Pro macOS app is being prepared for the Mac App Store and
-is not yet available for purchase. This repository also contains a separate
+The native Free/Pro macOS app is [available on the Mac App Store](https://apps.apple.com/us/app/voice-dictate-local-ai/id6814047582).
+Version 3.0 was released October 2, 2026. This repository also contains a separate
 open-source Python preview; please specify which edition you are using.
 
 ## Contact
@@ -44,9 +44,9 @@ published model. Cached transcription does not need an internet connection.
 
 ## Pro Purchase and Restore
 
-The planned upgrade is a one-time, non-consumable purchase, with a US price
-of $2.99. The App Store will display the price for your region when the app
-is available. There is no subscription. Pro unlocks longer recordings and
+The optional upgrade is a one-time, non-consumable purchase, with a US price
+of $2.99. The App Store displays the price for your region.
+There is no subscription. Pro unlocks longer recordings and
 Polished English, Original Language, and Developer modes.
 
 Use Restore Purchases in the app while signed into the Apple Account used

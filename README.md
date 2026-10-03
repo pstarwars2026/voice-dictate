@@ -1,9 +1,9 @@
 # Voice Dictate
 
 On-device dictation for Apple Silicon Macs, with Free and Pro in one macOS app.
-As last verified on September 20, 2026, version 3.0 and its one-time Pro upgrade
-were **Waiting for Review**. That dated status is not confirmation of current
-App Store availability. This repository contains the Apache-2.0 Free source core
+**Version 3.0 is now available on the Mac App Store**, released October 2, 2026.
+[Download Voice Dictate: Local AI](https://apps.apple.com/us/app/voice-dictate-local-ai/id6814047582).
+US availability verified October 3, 2026. This repository contains the Apache-2.0 Free source core
 and model catalog; the native commercial app is developed privately.
 
 Verified Pro ownership changes the running Dock and in-app artwork;
@@ -19,11 +19,11 @@ Finder and the App Store listing retain the base app icon.
 | On-device model download and compatible updates | Included | Included |
 
 Both tiers initially use Copy, not cross-app insertion. Storefront prices come
-from Apple; USD $2.99 is configured for Pro, but the listing is not live yet. See
+from Apple; the US Pro upgrade is USD $2.99, with no subscription. See
 [Free and Pro](docs/EDITIONS.md) for scope, source boundaries, and status.
-The submitted packaged build requires macOS 26.2 or newer on Apple
+The Mac App Store app requires macOS 26.2 or newer on Apple
 Silicon; the source runtime's compatibility depends on its installed libraries.
-The initial planned availability excludes France.
+The initial release excludes France.
 
 [Support](SUPPORT.md) | [Privacy](PRIVACY.md)
 

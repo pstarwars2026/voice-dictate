@@ -2,23 +2,23 @@
 
 ## Status
 
-Voice Dictate is one native macOS app with Free and Pro tiers. As last verified
-on September 20, 2026, version 3.0 and Voice Dictate Pro were **Waiting for Review**.
-That dated status is not confirmation of current App Store availability.
+Voice Dictate is one native macOS app with Free and Pro tiers. Version 3.0 was
+released October 2, 2026; US availability was verified October 3, 2026.
+[Download on the Mac App Store](https://apps.apple.com/us/app/voice-dictate-local-ai/id6814047582).
 Pro artwork follows verified ownership in the app and running Dock, including
 after relaunch and restore. Finder and the App Store listing retain the base icon.
-The initial planned availability excludes France.
+The initial release excludes France.
 This public repository contains
 the Free Python core (3.0.0a1) and the compatible model catalog. Native packaging
 and StoreKit purchase code are maintained privately.
 
-The first packaged release will prioritize the Mac App Store. Copy-only output
+The packaged app is available through the Mac App Store. Copy-only output
 is the accepted baseline in both tiers. The Python source runtime can still
 paste using Accessibility permission; that does not establish sandbox support.
 Cross-app insertion may become Pro only after a compliant implementation is
 verified. It is not included in the advertised initial paid feature set.
 
-| Capability | Free source edition | Submitted packaged Pro upgrade |
+| Capability | Free source edition | Mac App Store Pro upgrade |
 |---|---|---|
 | Local verbatim dictation | Available | Included |
 | Recording length | 5-30 seconds | Longer sessions, internally chunked for the model |
@@ -27,10 +27,10 @@ verified. It is not included in the advertised initial paid feature set.
 | First-use model download and offline inference | Available | Included |
 | Polished English, original-language cleanup, developer modes | Not in Free | Included |
 | Verified model-update catalog and rollback | Catalog published here; manager in native app | Same support as Free |
-| Native packaged app and purchase/restore | Not part of the source core | Submitted to Apple; not yet distributed |
+| Native packaged app and purchase/restore | Not part of the source core | Available through the Mac App Store |
 
 Pricing is a USD $2.99 one-time non-consumable upgrade, not a subscription.
-This price is configured in App Store Connect; the product is not live yet.
+The app is free to download; Pro is an optional in-app purchase.
 Storefront prices are loaded from the store, not hard-coded in UI.
 The purchase unlocks the stated features; it does not promise all future paid
 products or features forever.
